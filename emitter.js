@@ -143,7 +143,7 @@ function getEmitter() {
 
 function deleteSubscribe(localThis, event, context) {
     let index = localThis.events[event].findIndex((item) => item.context === context);
-    if (typeof index !== 'undefined') {
+    if (index !== -1) {
         localThis.events[event].splice(index, 1);
     }
 }
