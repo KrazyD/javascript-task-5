@@ -62,7 +62,7 @@ function getEmitter() {
         emit: function (event) {
             let events = splitToNamespace(event);
             events.forEach(function (item) {
-                if (this.events.hasOwnProperty(item)) {
+                if (this.events[item] !== undefined) {
                     this.events[item].forEach(function (obj) {
                         if (obj.hasOwnProperty('frequency')) {
                             let count = obj.numsOfEvents % obj.frequency;
