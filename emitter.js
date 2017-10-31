@@ -4,7 +4,7 @@
  * Сделано задание на звездочку
  * Реализованы методы several и through
  */
-getEmitter.isStar = true;
+getEmitter.isStar = false;
 module.exports = getEmitter;
 
 /**
@@ -146,7 +146,7 @@ function splitToNamespace(event) {
     return events.reduce(function (prev, curr, index) {
         if (index === 0) {
             prev.push(curr);
-        } else if (curr !== '') {
+        } else {
             prev.push(prev[index - 1] + '.' + curr);
         }
 
