@@ -24,10 +24,9 @@ function getEmitter() {
          * @returns {Object}
          */
         on: function (event, context, handler) {
-            if (!this.events.hasOwnProperty(event)) {
-                this.events[event] = [];
-            }
-            this.events[event].push({ context: context, handler: handler.bind(context) });
+            let obj = onFunc(this.events, event, context, handler);
+            let ttt = event.split('.');
+            this.events[event].push(obj);
 
             return this;
         },
@@ -99,11 +98,7 @@ function getEmitter() {
          * @returns {Object}
          */
         several: function (event, context, handler, times) {
-            if (!this.events.hasOwnProperty(event)) {
-                this.events[event] = [];
-            }
-            let obj = { context: context,
-                handler: handler.bind(context) };
+            let obj = onFunc(this.events, event, context, handler);
             if (times > 0) {
                 obj.times = times;
                 obj.numsOfEvents = 0;
@@ -123,11 +118,7 @@ function getEmitter() {
          * @returns {Object}
          */
         through: function (event, context, handler, frequency) {
-            if (!this.events.hasOwnProperty(event)) {
-                this.events[event] = [];
-            }
-            let obj = { context: context,
-                handler: handler.bind(context) };
+            let obj = onFunc(this.events, event, context, handler);
             if (frequency > 0) {
                 obj.frequency = frequency;
                 obj.numsOfEvents = 0;
@@ -163,4 +154,13 @@ function splitToNamespace(event) {
         return prev;
     }, [])
         .reverse();
+}
+
+function onFunc(events, event, context, handler) {
+    if (!events.hasOwnProperty(event)) {
+        events[event] = [];
+    }
+
+    return { context: context,
+        handler: handler.bind(context) };
 }
