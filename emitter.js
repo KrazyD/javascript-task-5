@@ -25,7 +25,6 @@ function getEmitter() {
          */
         on: function (event, context, handler) {
             let obj = onFunc(this.events, event, context, handler);
-            let ttt = event.split('.');
             this.events[event].push(obj);
 
             return this;
