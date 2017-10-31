@@ -37,19 +37,12 @@ function getEmitter() {
          * @returns {Object}
          */
         off: function (event, context) {
-            let unsubEvents = [];
-            for (let addedEvent in this.events) {
-                if (!this.events.hasOwnProperty(addedEvent)) {
-                    continue;
-                }
-                let isEvUnsub = unsubEvents.some((unsEv) => unsEv === addedEvent);
-                if (!isEvUnsub && addedEvent.startsWith(event + '.')) {
-                    unsubEvents.push(deleteSubscribe(this, addedEvent, context));
-                }
-                if (!isEvUnsub && addedEvent === event) {
-                    unsubEvents.push(deleteSubscribe(this, addedEvent, context));
-                }
-            }
+            let unsubEvents = Object.keys(this.events).filter((ev) => {
+                return ev.startsWith(event + '.') || ev === event;
+            });
+            unsubEvents.forEach(function (unsubEv) {
+                deleteSubscribe(this, unsubEv, context);
+            }, this);
 
             return this;
         },
