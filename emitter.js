@@ -39,19 +39,17 @@ function getEmitter() {
          * @returns {Object}
          */
         off: function (event, context) {
-            let isUnsubscribe = false;
-            let isMoreUnsubscribe = false;
-            for (let ev in this.events) {
-                if (!this.events.hasOwnProperty(ev)) {
+            let unsubEvents = [];
+            for (let addedEvent in this.events) {
+                if (!this.events.hasOwnProperty(addedEvent)) {
                     continue;
                 }
-                if (ev.indexOf(event + '.') !== -1 && !isMoreUnsubscribe) {
-                    deleteSubscribe(this, ev, context);
-                    isMoreUnsubscribe = true;
+                let isEvUnsub = unsubEvents.some((unsEv) => unsEv === addedEvent);
+                if (!isEvUnsub && addedEvent.indexOf(event + '.') !== -1) {
+                    unsubEvents.push(deleteSubscribe(this, addedEvent, context));
                 }
-                if (ev === event && !isUnsubscribe) {
-                    deleteSubscribe(this, ev, context);
-                    isUnsubscribe = true;
+                if (!isEvUnsub && addedEvent === event) {
+                    unsubEvents.push(deleteSubscribe(this, addedEvent, context));
                 }
             }
 
@@ -142,10 +140,14 @@ function getEmitter() {
 }
 
 function deleteSubscribe(localThis, event, context) {
-    let index = localThis.events[event].findIndex((item) => item.context === context);
-    if (index !== -1) {
-        localThis.events[event].splice(index, 1);
+    if (localThis.events.hasOwnProperty(event)) {
+        let index = localThis.events[event].findIndex((item) => item.context === context);
+        if (index !== -1) {
+            return localThis.events[event].splice(index, 1);
+        }
     }
+
+    return undefined;
 }
 
 function splitToNamespace(event) {
