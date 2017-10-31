@@ -156,7 +156,7 @@ function splitToNamespace(event) {
     return events.reduce(function (prev, curr, index) {
         if (index === 0) {
             prev.push(curr);
-        } else {
+        } else if (curr !== '') {
             prev.push(prev[index - 1] + '.' + curr);
         }
 
