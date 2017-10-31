@@ -43,7 +43,7 @@ function getEmitter() {
                     continue;
                 }
                 let isEvUnsub = unsubEvents.some((unsEv) => unsEv === addedEvent);
-                if (!isEvUnsub && addedEvent.indexOf(event + '.') !== -1) {
+                if (!isEvUnsub && addedEvent.startsWith(event + '.')) {
                     unsubEvents.push(deleteSubscribe(this, addedEvent, context));
                 }
                 if (!isEvUnsub && addedEvent === event) {
