@@ -130,11 +130,9 @@ function getEmitter() {
 }
 
 function deleteSubscribe(localThis, event, context) {
-    if (localThis.events.hasOwnProperty(event)) {
-        let index = localThis.events[event].findIndex((item) => item.context === context);
-        if (index !== -1) {
-            return localThis.events[event].splice(index, 1);
-        }
+    let index = localThis.events[event].findIndex((item) => item.context === context);
+    if (index !== -1) {
+        return localThis.events[event].splice(index, 1);
     }
 
     return undefined;
