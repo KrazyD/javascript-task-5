@@ -41,7 +41,9 @@ function getEmitter() {
                 return ev.startsWith(event + '.') || ev === event;
             });
             unsubEvents.forEach(function (unsubEv) {
-                deleteSubscribe(this, unsubEv, context);
+                this.events[unsubEv] = this.events[unsubEv].filter((obj) => {
+                    return obj.context !== context;
+                });
             }, this);
 
             return this;
@@ -125,10 +127,8 @@ function getEmitter() {
 function deleteSubscribe(localThis, event, context) {
     let index = localThis.events[event].findIndex((item) => item.context === context);
     if (index !== -1) {
-        return localThis.events[event].splice(index, 1);
+        localThis.events[event].splice(index, 1);
     }
-
-    return undefined;
 }
 
 function splitToNamespace(event) {
