@@ -57,26 +57,12 @@ function getEmitter() {
         emit: function (event) {
             let events = splitToNamespace(event);
             events.forEach(function (item) {
-                if (this.events[item] !== undefined) {
-                    this.events[item].forEach(function (obj) {
-                        if (obj.hasOwnProperty('frequency')) {
-                            let count = obj.numsOfEvents % obj.frequency;
-                            if (count === 0) {
-                                obj.handler();
-                            }
-                            obj.numsOfEvents++;
-                        } else if (obj.hasOwnProperty('times')) {
-                            if (obj.numsOfEvents > (obj.times - 1)) {
-                                deleteSubscribe(this, item, obj.context);
-                            } else {
-                                obj.handler();
-                            }
-                            obj.numsOfEvents++;
-                        } else {
-                            obj.handler();
-                        }
-                    }, this);
+                if (!this.events[item]) {
+                    return;
                 }
+                this.events[item].forEach(function (obj) {
+                    obj.handler();
+                }, this);
             }, this);
 
             return this;
@@ -92,11 +78,14 @@ function getEmitter() {
          * @returns {Object}
          */
         several: function (event, context, handler, times) {
-            let obj = onFunc(this.events, event, context, handler);
-            if (times > 0) {
-                obj.times = times;
-                obj.numsOfEvents = 0;
-            }
+            let numsOfEvents = 0;
+
+            let obj = onFunc(this.events, event, context, () => {
+                if (numsOfEvents <= (times - 1)) {
+                    handler.call(context);
+                }
+                numsOfEvents++;
+            });
             this.events[event].push(obj);
 
             return this;
@@ -112,23 +101,19 @@ function getEmitter() {
          * @returns {Object}
          */
         through: function (event, context, handler, frequency) {
-            let obj = onFunc(this.events, event, context, handler);
-            if (frequency > 0) {
-                obj.frequency = frequency;
-                obj.numsOfEvents = 0;
-            }
+            let numsOfEvents = 0;
+            let obj = onFunc(this.events, event, context, () => {
+                let count = numsOfEvents % frequency;
+                if (count === 0 && frequency !== 0) {
+                    handler.call(context);
+                }
+                numsOfEvents++;
+            });
             this.events[event].push(obj);
 
             return this;
         }
     };
-}
-
-function deleteSubscribe(localThis, event, context) {
-    let index = localThis.events[event].findIndex((item) => item.context === context);
-    if (index !== -1) {
-        localThis.events[event].splice(index, 1);
-    }
 }
 
 function splitToNamespace(event) {
